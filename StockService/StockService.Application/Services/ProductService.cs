@@ -69,15 +69,28 @@ public sealed class ProductService : IProductService
         return output;
     }
 
-    public async Task IncrementBalanceByProductCodeServiceAsync(string code, int quantity, CancellationToken cancellationToken)
+    public async Task IncrementBalanceByProductListServiceAsync(IncrementBalanceByProductListServiceInput input, CancellationToken cancellationToken)
     {
-        var product = await _productRepository.GetProductByCodeAsync(code, cancellationToken);
-        if (product is null)
-            throw new ArgumentException($"Product with code {code} was not found.");
+        await using var transaction = await _productRepository.BeginTransactionAsync(cancellationToken);
 
-        product.IncrementBalance(quantity);
+        try
+        {
+            foreach (var item in input.ProductList)
+            {
+                if (item.Quantity <= 0)
+                    throw new ArgumentException($"The quantity for the product '{item.Code}' must be greater than 0.");
 
-        await _productRepository.UpdateProductAsync(product, cancellationToken);
+                var rowsAffected = await _productRepository.IncrementProductBalanceAsync(item.Code, item.Quantity, cancellationToken);
+                if (rowsAffected == 0)
+                    throw new InvalidOperationException($"Product with code {item.Code} was not found.");
+            }
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
     }
 
     public async Task DeductBalanceByProductListServiceAsync(DeductBalanceByProductListServiceInput input, CancellationToken cancellationToken)

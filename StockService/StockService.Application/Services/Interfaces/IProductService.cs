@@ -17,9 +17,8 @@ public interface IProductService
         string code,
         CancellationToken cancellationToken);
 
-    public Task IncrementBalanceByProductCodeServiceAsync(
-        string code,
-        int quantity,
+    public Task IncrementBalanceByProductListServiceAsync(
+        IncrementBalanceByProductListServiceInput input,
         CancellationToken cancellationToken);
 
     public Task DeductBalanceByProductListServiceAsync(

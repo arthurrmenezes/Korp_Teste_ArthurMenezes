@@ -20,25 +20,6 @@ public class Product
         CreatedAt = DateTime.UtcNow;
     }
 
-    public void DeductBalance(int balance)
-    {
-        if (balance <= 0)
-            throw new ArgumentException("Balance to deduct must be greater than zero.");
-
-        if (Balance - balance < 0)
-            throw new InvalidOperationException($"Insufficient balance for {Description}.");
-
-        Balance = Balance - balance;
-    }
-
-    public void IncrementBalance(int balance)
-    {
-        if (balance <= 0)
-            throw new ArgumentException("Balance to increment must be greater than zero.");
-
-        Balance = Balance + balance;
-    }
-
     private void ValidateDomain(string code, string description, int balance)
     {
         if (string.IsNullOrEmpty(code))

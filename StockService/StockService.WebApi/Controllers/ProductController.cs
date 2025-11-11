@@ -64,18 +64,20 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    [Route("{code}/increment-balance")]
-    public async Task<IActionResult> IncrementBalanceByProductCodeAsync(
-        [FromRoute] string code,
-        [FromBody] IncrementBalanceByProductCodePayload input,
+    [Route("increment-balance")]
+    public async Task<IActionResult> IncrementBalanceByProductListAsync(
+        [FromBody] IncrementBalanceByProductListPayload input,
         CancellationToken cancellationToken)
     {
-        if (input.Quantity <= 0)
-            return BadRequest("The quantity needs to be greater than 0.");
+        if (input.ProductList == null || input.ProductList.Length == 0)
+            return BadRequest("At least one product must be provided.");
 
-        await _productService.IncrementBalanceByProductCodeServiceAsync(
-            code: code,
-            quantity: input.Quantity,
+        var productList = input.ProductList.Select(p => new IncrementBalanceByProductListServiceInputProduct(
+            code: p.Code,
+            quantity: p.Quantity)).ToArray();
+
+        await _productService.IncrementBalanceByProductListServiceAsync(
+            input: IncrementBalanceByProductListServiceInput.Factory(productList),
             cancellationToken: cancellationToken);
 
         return NoContent();

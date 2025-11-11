@@ -11,7 +11,7 @@ public interface IProductRepository
 
     public Task<Product?> GetProductByIdAsync(Guid productId, CancellationToken cancellationToken);
 
-    public Task UpdateProductAsync(Product product, CancellationToken cancellationToken);
+    public Task<int> IncrementProductBalanceAsync(string productCode, int quantity, CancellationToken cancellationToken);
 
     public Task<int> DeductProductBalanceAsync(string productCode, int quantity, CancellationToken cancellationToken);
 

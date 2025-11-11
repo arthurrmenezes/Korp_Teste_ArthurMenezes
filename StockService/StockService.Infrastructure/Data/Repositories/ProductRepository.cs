@@ -34,10 +34,10 @@ public class ProductRepository : IProductRepository
         return product;
     }
 
-    public async Task UpdateProductAsync(Product product, CancellationToken cancellationToken)
+    public async Task<int> IncrementProductBalanceAsync(string productCode, int quantity, CancellationToken cancellationToken)
     {
-        _dataContext.Products.Update(product);
-        await _dataContext.SaveChangesAsync(cancellationToken);
+        return await _dataContext.Products.Where(p => p.Code == productCode && quantity > 0)
+            .ExecuteUpdateAsync(s => s.SetProperty(p => p.Balance, p => p.Balance + quantity), cancellationToken);
     }
 
     public async Task<int> DeductProductBalanceAsync(string productCode, int quantity, CancellationToken cancellationToken)
