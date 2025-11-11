@@ -18,7 +18,7 @@ public sealed class ProductService : IProductService
     {
         var productCodeExists = await _productRepository.GetProductByCodeAsync(input.Code, cancellationToken);
         if (productCodeExists != null)
-            throw new ArgumentException($"Product with code {input.Code} already exists.");
+            throw new InvalidOperationException($"Product with code {input.Code} already exists.");
 
         var product = new Domain.Entities.Product(
             code: input.Code,
@@ -41,7 +41,7 @@ public sealed class ProductService : IProductService
     {
         var product = await _productRepository.GetProductByIdAsync(id, cancellationToken);
         if (product is null)
-            throw new ArgumentException($"Product with ID {id} was not found.");
+            throw new KeyNotFoundException($"Product with ID {id} was not found.");
 
         var output = GetProductByIdServiceOutput.Factory(
             id: product.Id.ToString(),
@@ -57,7 +57,7 @@ public sealed class ProductService : IProductService
     {
         var product = await _productRepository.GetProductByCodeAsync(code, cancellationToken);
         if (product is null)
-            throw new ArgumentException($"Product with code {code} was not found.");
+            throw new KeyNotFoundException($"Product with code {code} was not found.");
 
         var output = GetProductByCodeServiceOutput.Factory(
             id: product.Id.ToString(),
@@ -106,7 +106,7 @@ public sealed class ProductService : IProductService
                 {
                     var product = await _productRepository.GetProductByCodeAsync(item.Code, cancellationToken);
                     if (product is null)
-                        throw new ArgumentException($"Product with code {item.Code} was not found.");
+                        throw new KeyNotFoundException($"Product with code {item.Code} was not found.");
 
                     throw new InvalidOperationException($"Insufficient balance for '{product.Description}'. Requested: {item.Quantity}, Available: {product.Balance}.");
                 }

@@ -23,10 +23,10 @@ public class Product
     private void ValidateDomain(string code, string description, int balance)
     {
         if (string.IsNullOrEmpty(code))
-            throw new ArgumentNullException("Code cannot be null or empty.");
+            throw new ArgumentException("Code cannot be null or empty.");
 
         if (string.IsNullOrEmpty(description))
-            throw new ArgumentNullException("Description cannot be null or empty.");
+            throw new ArgumentException("Description cannot be null or empty.");
 
         if (balance < 0)
             throw new ArgumentException("Balance cannot be negative.");

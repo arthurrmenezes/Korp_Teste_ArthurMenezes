@@ -21,15 +21,15 @@ public class ProductController : ControllerBase
         [FromBody] RegisterProductPayload input,
         CancellationToken cancellationToken)
     {
+        if (input.Balance < 0 || input.Balance > int.MaxValue)
+            return BadRequest($"Product balance must be greater than or equal to 0 and less than {int.MaxValue}.");
+
         var response = await _productService.RegisterProductServiceAsync(
             input: RegisterProductServiceInput.Factory(
                 code: input.Code,
                 description: input.Description,
                 balance: input.Balance),
             cancellationToken: cancellationToken);
-
-        if (response is null)
-            return BadRequest();
 
         return CreatedAtAction("GetProductById", new { productId = response.Id }, response);
     }
@@ -44,8 +44,6 @@ public class ProductController : ControllerBase
             return BadRequest("The provided ID is not a valid GUID.");
 
         var response = await _productService.GetProductByIdServiceAsync(guid, cancellationToken);
-        if (response is null)
-            return NotFound();
 
         return Ok(response);
     }
@@ -56,9 +54,10 @@ public class ProductController : ControllerBase
         [FromRoute] string code,
         CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(code))
+            return BadRequest("The product code cannot be null or whitespace.");
+
         var response = await _productService.GetProductByCodeServiceAsync(code, cancellationToken);
-        if (response is null)
-            return NotFound();
 
         return Ok(response);
     }
@@ -71,6 +70,12 @@ public class ProductController : ControllerBase
     {
         if (input.ProductList == null || input.ProductList.Length == 0)
             return BadRequest("At least one product must be provided.");
+
+        if (input.ProductList.Any(p => string.IsNullOrWhiteSpace(p.Code)))
+            return BadRequest("The product code cannot be null or whitespace.");
+
+        if (input.ProductList.Any(p => p.Quantity <= 0))
+            return BadRequest("All products in the list must have a quantity greater than zero.");
 
         var productList = input.ProductList.Select(p => new IncrementBalanceByProductListServiceInputProduct(
             code: p.Code,
@@ -91,6 +96,12 @@ public class ProductController : ControllerBase
     {
         if (input.ProductList == null || input.ProductList.Length == 0)
             return BadRequest("At least one product must be provided.");
+
+        if (input.ProductList.Any(p => string.IsNullOrWhiteSpace(p.Code)))
+            return BadRequest("The product code cannot be null or whitespace.");
+
+        if (input.ProductList.Any(p => p.Quantity <= 0))
+            return BadRequest("All products in the list must have a quantity greater than zero.");
 
         var productList = input.ProductList.Select(p => new DeductBalanceByProductListServiceInputProduct(
             code: p.Code,
