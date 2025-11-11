@@ -22,13 +22,21 @@ public static class DependencyInjection
 
         serviceCollection.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
-        # region Retry Configuration
+        #region Retry Configuration
 
         var retryPolicy = HttpPolicyExtensions
             .HandleTransientHttpError()
             .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
 
-        # endregion
+        #endregion
+
+        #region Circuit Breaker Configuration
+
+        var circuitBreakerPolicy = HttpPolicyExtensions
+            .HandleTransientHttpError()
+            .CircuitBreakerAsync(3, TimeSpan.FromSeconds(30));
+
+        #endregion
 
         serviceCollection.AddHttpClient<IStockService, StockService>(externalService =>
         {
@@ -37,7 +45,9 @@ public static class DependencyInjection
                 throw new ArgumentNullException("The base url from Stock Service was not found.");
 
             externalService.BaseAddress = new Uri(baseUrl);
-        }).AddPolicyHandler(retryPolicy);
+        })
+            .AddPolicyHandler(retryPolicy)
+            .AddPolicyHandler(circuitBreakerPolicy);
 
         return serviceCollection;
     }
