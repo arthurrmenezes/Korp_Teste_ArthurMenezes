@@ -1,0 +1,12 @@
+# Arquivos e pastas do Visual Studio / C#
+## Ignore build artifacts
+[Bb]in/
+[Oo]bj/
+
+# Ignore user-specific files
+.vs/
+*.user
+*.suo
+
+# Ignore IDE files (VS Code)
+.vscode/
