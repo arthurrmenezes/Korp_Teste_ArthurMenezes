@@ -28,10 +28,10 @@ public sealed class InvoiceService : IInvoiceService
         {
             var product = await _stockService.GetProductByCodeServiceAsync(item.ProductCode, cancellationToken);
             if (product is null)
-                throw new ArgumentException($"Product with code {item.ProductCode} was not found.");
+                throw new KeyNotFoundException($"Product with code {item.ProductCode} was not found.");
 
             if (product.ProductBalance < item.Quantity)
-                throw new ArgumentException($"Insufficient stock for product '{product.ProductDescription}'. Requested: {item.Quantity}, Available: {product.ProductBalance}");
+                throw new InvalidOperationException($"Insufficient stock for product '{product.ProductDescription}'. Requested: {item.Quantity}, Available: {product.ProductBalance}");
 
             var invoiceItem = new InvoiceItem(
                 productCode: item.ProductCode,
@@ -62,7 +62,7 @@ public sealed class InvoiceService : IInvoiceService
     {
         var invoice = await _invoiceRepository.GetInvoiceByIdAsync(invoiceId, cancellationToken);
         if (invoice is null)
-            throw new ArgumentException($"Invoice with id {invoiceId} was not found.");
+            throw new KeyNotFoundException($"Invoice with id {invoiceId} was not found.");
 
         var outputItems = invoice.Items.Select(i => new GetInvoiceByIdServiceOutputItems(
             id: i.Id.ToString(),
@@ -83,21 +83,21 @@ public sealed class InvoiceService : IInvoiceService
     {
         var invoice = await _invoiceRepository.GetInvoiceByIdAsync(invoiceId, cancellationToken);
         if (invoice is null)
-            throw new ArgumentException($"Invoice with id {invoiceId} was not found.");
+            throw new KeyNotFoundException($"Invoice with id {invoiceId} was not found.");
 
         if (invoice.Status == InvoiceStatus.Closed)
-            throw new ArgumentException("Cannot add products to a closed invoice.");
+            throw new InvalidOperationException("Cannot add products to a closed invoice.");
 
         foreach (var item in input.Items)
         {
             var product = await _stockService.GetProductByCodeServiceAsync(item.ProductCode, cancellationToken);
             if (product is null)
-                throw new ArgumentException($"Product with code {item.ProductCode} was not found.");
+                throw new KeyNotFoundException($"Product with code {item.ProductCode} was not found.");
 
             var totalProductBalance = invoice.Items.FirstOrDefault(i => i.ProductCode == item.ProductCode)?.ProductBalance ?? 0;
 
             if (product.ProductBalance < (totalProductBalance + item.Quantity))
-                throw new ArgumentException($"Insufficient stock for product '{product.ProductDescription}'. Requested: {item.Quantity}, Available: {product.ProductBalance}");
+                throw new InvalidOperationException($"Insufficient stock for product '{product.ProductDescription}'. Requested: {item.Quantity}, Available: {product.ProductBalance}");
 
             var invoiceItem = new InvoiceItem(
                 productCode: item.ProductCode,
@@ -128,10 +128,10 @@ public sealed class InvoiceService : IInvoiceService
     {
         var invoice = await _invoiceRepository.GetInvoiceByIdAsync(invoiceId, cancellationToken);
         if (invoice is null)
-            throw new ArgumentException($"Invoice with id {invoiceId} was not found.");
+            throw new KeyNotFoundException($"Invoice with id {invoiceId} was not found.");
 
         if (invoice.Status != InvoiceStatus.Open)
-            throw new ArgumentException($"Only invoices with the status {InvoiceStatus.Open} can be printed");
+            throw new InvalidOperationException($"Only invoices with the status {InvoiceStatus.Open} can be printed");
 
         var items = invoice.Items.Select(i => new DeductBalanceByProductListServiceInputProduct(
             code: i.ProductCode,
@@ -145,9 +145,9 @@ public sealed class InvoiceService : IInvoiceService
 
             await _invoiceRepository.UpdateProductAsync(invoice, cancellationToken);
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            throw new InvalidOperationException("Failed to communicate with the stock service. The stock was not deducted and the invoice remained open.", ex);
+            throw new InvalidOperationException("Failed to communicate with the stock service. The stock was not deducted and the invoice remained open.", exception);
         }
 
         var outputItems = invoice.Items.Select(i => new PrintInvoiceByIdServiceOutputItems(

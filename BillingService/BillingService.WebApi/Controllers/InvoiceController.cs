@@ -21,8 +21,14 @@ public class InvoiceController : ControllerBase
         [FromBody] CreateInvoicePayload input,
         CancellationToken cancellationToken)
     {
-        if (input is null)
+        if (input is null || input.Items.Length == 0)
             return BadRequest("The invoice item cannot be null.");
+
+        if (input.Items.Any(p => string.IsNullOrWhiteSpace(p.ProductCode)))
+            return BadRequest("The product code cannot be null or whitespace.");
+
+        if (input.Items.Any(p => p.Quantity <= 0))
+            return BadRequest("All products in the list must have a quantity greater than zero.");
 
         var items = input.Items.Select(item => new CreateInvoiceServiceInputItems(
                 productCode: item.ProductCode,
@@ -33,7 +39,7 @@ public class InvoiceController : ControllerBase
             input: CreateInvoiceServiceInput.Factory(items), 
             cancellationToken: cancellationToken);
 
-        return Ok(response);
+        return CreatedAtAction("GetInvoiceById", new { invoiceId = response.InvoiceId }, response);
     }
 
     [HttpGet]
@@ -42,17 +48,12 @@ public class InvoiceController : ControllerBase
         [FromRoute] int invoiceId,
         CancellationToken cancellationToken)
     {
-        if (invoiceId <= 0)
-            return BadRequest("The invoice id must be greater than zero.");
-        if (invoiceId > int.MaxValue)
-            return BadRequest($"The invoice id must be lower than {int.MaxValue}.");
+        if (invoiceId <= 0 || invoiceId > int.MaxValue)
+            return BadRequest($"Invalid invoice ID. Remember: the invoice ID must be greater than zero and less than {int.MaxValue}.");
 
         var response = await _invoiceService.GetInvoiceByIdServiceAsync(
             invoiceId: invoiceId, 
             cancellationToken: cancellationToken);
-
-        if (response is null)
-            return NotFound($"Invoice with id {invoiceId} was not found.");
 
         return Ok(response);
     }
@@ -64,8 +65,17 @@ public class InvoiceController : ControllerBase
         [FromBody] AddItemsToInvoiceByIdPayload input,
         CancellationToken cancellationToken)
     {
-        if (input.Items.Length == 0 || input is null)
+        if (invoiceId <= 0 || invoiceId > int.MaxValue)
+            return BadRequest($"Invalid invoice ID. Remember: the invoice ID must be greater than zero and less than {int.MaxValue}.");
+
+        if (input is null || input.Items.Length == 0)
             return BadRequest("Add at least one product to the invoice.");
+
+        if (input.Items.Any(p => string.IsNullOrWhiteSpace(p.ProductCode)))
+            return BadRequest("The product code cannot be null or whitespace.");
+
+        if (input.Items.Any(p => p.Quantity <= 0))
+            return BadRequest("All products in the list must have a quantity greater than zero.");
 
         var items = input.Items.Select(i => new AddItemsToInvoiceByIdServiceInputItems(
             productCode: i.ProductCode,
@@ -85,6 +95,9 @@ public class InvoiceController : ControllerBase
         int invoiceId,
         CancellationToken cancellationToken)
     {
+        if (invoiceId <= 0 || invoiceId > int.MaxValue)
+            return BadRequest($"Invalid invoice ID. Remember: the invoice ID must be greater than zero and less than {int.MaxValue}.");
+
         var response = await _invoiceService.PrintInvoiceByIdServiceAsync(invoiceId, cancellationToken);
 
         return Ok(response);

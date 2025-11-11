@@ -19,7 +19,7 @@ public class Invoice
     public void AddProductToInvoiceList(InvoiceItem item)
     {
         if (Status != InvoiceStatus.Open)
-            throw new ArgumentException("Cannot add products to a closed invoice.");
+            throw new InvalidOperationException("Cannot add products to a closed invoice.");
 
         var existingItem = Items.FirstOrDefault(p => p.ProductCode == item.ProductCode);
         if (existingItem != null)
@@ -34,11 +34,12 @@ public class Invoice
     public void CloseInvoice()
     {
         if (Status == InvoiceStatus.Closed)
-            throw new ArgumentException("Invoice is already closed.");
+            throw new InvalidOperationException("Invoice is already closed.");
 
         if (Items.Count == 0)
-            throw new ArgumentException("Cannot close an invoice with no items.");
+            throw new InvalidOperationException("Cannot close an invoice with no items.");
 
         Status = InvoiceStatus.Closed;
     }
 }
+    
