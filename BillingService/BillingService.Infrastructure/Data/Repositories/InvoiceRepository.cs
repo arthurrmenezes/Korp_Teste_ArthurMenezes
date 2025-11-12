@@ -1,6 +1,8 @@
 ﻿using BillingService.Domain.Entities;
 using BillingService.Infrastructure.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Npgsql;
 
 namespace BillingService.Infrastructure.Data.Repositories;
 
@@ -41,9 +43,24 @@ public class InvoiceRepository : IInvoiceRepository
         await _dataContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateProductAsync(Invoice invoice, CancellationToken cancellationToken)
+    public async Task UpdateInvoiceAsync(Invoice invoice, CancellationToken cancellationToken)
     {
         _dataContext.Invoices.Update(invoice);
         await _dataContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken)
+    {
+        return await _dataContext.Database.BeginTransactionAsync(cancellationToken);
+    }
+
+    public async Task<Invoice?> GetInvoiceToUpdateByIdAsync(int id, CancellationToken cancellationToken)
+    {
+        var sql = @"SELECT * FROM ""Invoices"" WHERE ""Id"" = @id FOR UPDATE";
+        return await _dataContext.Invoices
+            .FromSqlRaw(sql, new NpgsqlParameter("@id", id))
+            .Include(i => i.Items)
+            .AsTracking()
+            .FirstOrDefaultAsync(cancellationToken);
     }
 }
