@@ -77,12 +77,13 @@ public sealed class ProductService : IProductService
         {
             foreach (var item in input.ProductList)
             {
-                if (item.Quantity <= 0)
-                    throw new ArgumentException($"The quantity for the product '{item.Code}' must be greater than 0.");
+                var product = await _productRepository.GetProductForUpdateAsync(item.Code, cancellationToken);
+                if (product is null)
+                    throw new KeyNotFoundException($"Product with code {item.Code} was not found.");
 
-                var rowsAffected = await _productRepository.IncrementProductBalanceAsync(item.Code, item.Quantity, cancellationToken);
-                if (rowsAffected == 0)
-                    throw new InvalidOperationException($"Product with code {item.Code} was not found.");
+                product.IncrementBalance(item.Quantity);
+
+                await _productRepository.UpdateProductAsync(product, cancellationToken);
             }
             await transaction.CommitAsync(cancellationToken);
         }
@@ -101,15 +102,13 @@ public sealed class ProductService : IProductService
         {
             foreach (var item in input.ProductList)
             {
-                var rowsAffected = await _productRepository.DeductProductBalanceAsync(item.Code, item.Quantity, cancellationToken);
-                if (rowsAffected == 0)
-                {
-                    var product = await _productRepository.GetProductByCodeAsync(item.Code, cancellationToken);
-                    if (product is null)
-                        throw new KeyNotFoundException($"Product with code {item.Code} was not found.");
+                var product = await _productRepository.GetProductForUpdateAsync(item.Code, cancellationToken);
+                if (product is null)
+                    throw new KeyNotFoundException($"Product with code {item.Code} was not found.");
 
-                    throw new InvalidOperationException($"Insufficient balance for '{product.Description}'. Requested: {item.Quantity}, Available: {product.Balance}.");
-                }
+                product.DecrementBalance(item.Quantity);
+
+                await _productRepository.UpdateProductAsync(product, cancellationToken);
             }
             await transaction.CommitAsync(cancellationToken);
         }

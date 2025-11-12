@@ -31,4 +31,23 @@ public class Product
         if (balance < 0)
             throw new ArgumentException("Balance cannot be negative.");
     }
+
+    public void IncrementBalance(int quantity)
+    {
+        if (quantity <= 0)
+            throw new ArgumentException("Quantity to increment must be greater than 0.");
+
+        Balance = Balance + quantity;
+    }
+
+    public void DecrementBalance(int quantity)
+    {
+        if (quantity <= 0)
+            throw new ArgumentException("Quantity to decrement must be greater than 0.");
+
+        if (Balance < quantity)
+            throw new InvalidOperationException("Insufficient balance to decrement this quantity.");
+
+        Balance = Balance - quantity;
+    }
 }

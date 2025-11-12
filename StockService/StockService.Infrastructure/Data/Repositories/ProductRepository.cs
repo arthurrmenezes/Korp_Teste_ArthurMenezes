@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using StockService.Domain.Entities;
 using StockService.Infrastructure.Data.Repositories.Interfaces;
+using Npgsql;
 
 namespace StockService.Infrastructure.Data.Repositories;
 
@@ -34,20 +35,23 @@ public class ProductRepository : IProductRepository
         return product;
     }
 
-    public async Task<int> IncrementProductBalanceAsync(string productCode, int quantity, CancellationToken cancellationToken)
-    {
-        return await _dataContext.Products.Where(p => p.Code == productCode && quantity > 0)
-            .ExecuteUpdateAsync(s => s.SetProperty(p => p.Balance, p => p.Balance + quantity), cancellationToken);
-    }
-
-    public async Task<int> DeductProductBalanceAsync(string productCode, int quantity, CancellationToken cancellationToken)
-    {
-        return await _dataContext.Products.Where(p => p.Code == productCode && p.Balance >= quantity)
-            .ExecuteUpdateAsync(s => s.SetProperty(p => p.Balance, p => p.Balance - quantity), cancellationToken);
-    }
-
     public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken)
     {
         return await _dataContext.Database.BeginTransactionAsync(cancellationToken);
+    }
+
+    public async Task<Product?> GetProductForUpdateAsync(string code, CancellationToken cancellationToken)
+    {
+        var sql = @"SELECT * FROM ""Products"" WHERE ""Code"" = @code FOR UPDATE";
+        return await _dataContext.Products
+            .FromSqlRaw(sql, new NpgsqlParameter("@code", code))
+            .AsTracking()
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task UpdateProductAsync(Product product, CancellationToken cancellationToken)
+    {
+        _dataContext.Products.Update(product);
+        await _dataContext.SaveChangesAsync();
     }
 }
