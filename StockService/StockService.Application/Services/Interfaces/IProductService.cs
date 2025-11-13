@@ -24,4 +24,9 @@ public interface IProductService
     public Task DeductBalanceByProductListServiceAsync(
         DeductBalanceByProductListServiceInput input,
         CancellationToken cancellationToken);
+
+    public Task<GetAllProductsServiceOutput> GetAllProductsServiceAsync(
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken);
 }

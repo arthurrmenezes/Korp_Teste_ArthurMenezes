@@ -118,4 +118,27 @@ public sealed class ProductService : IProductService
             throw;
         }
     }
+
+    public async Task<GetAllProductsServiceOutput> GetAllProductsServiceAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        var productList = await _productRepository.GetAllProductsAsync(pageNumber, pageSize, cancellationToken);
+
+        var totalProductsCount = await _productRepository.GetTotalProductsCountAsync(cancellationToken);
+
+        var productListOutput = productList.Select(p => new GetAllProductsServiceOutputProduct(
+            id: p.Id.ToString(),
+            code: p.Code,
+            description: p.Description,
+            balance: p.Balance,
+            createdAt: p.CreatedAt)).ToArray();
+
+        var output = GetAllProductsServiceOutput.Factory(
+            totalProducts: totalProductsCount,
+            pageNumber: pageNumber,
+            pageSize: pageSize,
+            totalPages: (int)Math.Ceiling((double) totalProductsCount / pageSize),
+            product: productListOutput);
+
+        return output;
+    }
 }

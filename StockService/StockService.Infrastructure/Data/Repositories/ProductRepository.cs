@@ -54,4 +54,23 @@ public class ProductRepository : IProductRepository
         _dataContext.Products.Update(product);
         await _dataContext.SaveChangesAsync();
     }
+
+    public async Task<Product[]> GetAllProductsAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        var productsToSkip = (pageNumber - 1) * pageSize;
+
+        var products = await _dataContext.Products
+            .OrderByDescending(p => p.CreatedAt)
+            .Skip(productsToSkip)
+            .Take(pageSize)
+            .ToArrayAsync(cancellationToken);
+
+        return products;
+    }
+
+    public async Task<int> GetTotalProductsCountAsync(CancellationToken cancellationToken)
+    {
+        var count = await _dataContext.Products.CountAsync(cancellationToken);
+        return count;
+    }
 }

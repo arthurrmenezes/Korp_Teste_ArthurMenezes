@@ -16,4 +16,8 @@ public interface IProductRepository
     public Task<Product?> GetProductForUpdateAsync(string code, CancellationToken cancellationToken);
 
     public Task UpdateProductAsync(Product product, CancellationToken cancellationToken);
+
+    public Task<Product[]> GetAllProductsAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
+
+    public Task<int> GetTotalProductsCountAsync(CancellationToken cancellationToken);
 }

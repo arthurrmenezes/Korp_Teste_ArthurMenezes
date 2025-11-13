@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace StockService.WebApi.Controllers.Payloads;
+﻿namespace StockService.WebApi.Controllers.Payloads;
 
 public class RegisterProductPayload
 {

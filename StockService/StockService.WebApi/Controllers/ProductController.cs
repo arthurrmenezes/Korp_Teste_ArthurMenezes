@@ -50,7 +50,7 @@ public class ProductController : ControllerBase
 
     [HttpGet]
     [Route("code/{code}")]
-    public async Task<IActionResult> GetProductByCode(
+    public async Task<IActionResult> GetProductByCodeAsync(
         [FromRoute] string code,
         CancellationToken cancellationToken)
     {
@@ -112,5 +112,21 @@ public class ProductController : ControllerBase
             cancellationToken: cancellationToken);
 
         return NoContent();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllProductsAsync(
+        CancellationToken cancellationToken,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 5)
+    {
+        if (pageNumber <= 0)
+            pageNumber = 1;
+
+        if (pageSize <= 0)
+            pageSize = 5;
+
+        var response = await _productService.GetAllProductsServiceAsync(pageNumber, pageSize, cancellationToken);
+        return Ok(response);
     }
 }
