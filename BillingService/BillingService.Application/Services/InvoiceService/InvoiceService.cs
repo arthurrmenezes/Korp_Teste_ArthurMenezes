@@ -1,13 +1,13 @@
-﻿using BillingService.Application.Services.Inputs;
-using BillingService.Application.Services.Interfaces;
-using BillingService.Application.Services.Outputs;
+﻿using BillingService.Application.Services.InvoiceService.Inputs;
+using BillingService.Application.Services.InvoiceService.Interfaces;
+using BillingService.Application.Services.InvoiceService.Outputs;
 using BillingService.Domain.Entities;
 using BillingService.Domain.ENUMs;
 using BillingService.Infrastructure.Data.Repositories.Interfaces;
 using BillingService.Infrastructure.Services.External.StockService.Inputs;
 using BillingService.Infrastructure.Services.External.StockService.Interfaces;
 
-namespace BillingService.Application.Services;
+namespace BillingService.Application.Services.InvoiceService;
 
 public sealed class InvoiceService : IInvoiceService
 {
@@ -137,7 +137,7 @@ public sealed class InvoiceService : IInvoiceService
     public async Task<PrintInvoiceByIdServiceOutput> PrintInvoiceByIdServiceAsync(int invoiceId, CancellationToken cancellationToken)
     {
         await using var transaction = await _invoiceRepository.BeginTransactionAsync(cancellationToken);
-        await Task.Delay(5000, cancellationToken);
+       
         try
         {
             var invoice = await _invoiceRepository.GetInvoiceToUpdateByIdAsync(invoiceId, cancellationToken);
@@ -178,5 +178,32 @@ public sealed class InvoiceService : IInvoiceService
             await transaction.RollbackAsync(cancellationToken);
             throw;
         }
+    }
+
+    public async Task<GetAllInvoicesServiceOutput> GetAllInvoicesServiceAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        var invoices = await _invoiceRepository.GetAllInvoicesAsync(pageNumber, pageSize, cancellationToken);
+
+        var totalInvoicesCount = await _invoiceRepository.GetTotalInvoicesCountAsync(cancellationToken);
+
+        var invoiceListOutput = invoices.Select(i => new GetAllInvoicesServiceOutputInvoice(
+            invoiceId: i.Id,
+            status: i.Status.ToString(),
+            createdAt: i.CreatedAt,
+            totalProducts: i.Items.Count,
+            products: i.Items.Select(p => new GetAllInvoicesServiceOutputInvoiceProductList(
+                productId: p.Id.ToString(),
+                code: p.ProductCode,
+                description: p.ProductDescription,
+                quantity: p.ProductBalance)).ToArray())).ToArray();
+
+        var output = GetAllInvoicesServiceOutput.Factory(
+            totalInvoices: totalInvoicesCount,
+            pageNumber: pageNumber,
+            pageSize: pageSize,
+            totalPages: (int)Math.Ceiling((double) totalInvoicesCount / pageSize),
+            invoices: invoiceListOutput);
+
+        return output;
     }
 }

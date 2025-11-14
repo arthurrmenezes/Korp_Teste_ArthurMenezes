@@ -1,5 +1,5 @@
-﻿using BillingService.Application.Services;
-using BillingService.Application.Services.Interfaces;
+﻿using BillingService.Application.Services.InvoiceService;
+using BillingService.Application.Services.InvoiceService.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BillingService.Application;

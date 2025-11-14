@@ -1,4 +1,4 @@
-﻿namespace BillingService.Application.Services.Outputs;
+﻿namespace BillingService.Application.Services.InvoiceService.Outputs;
 
 public sealed class CreateInvoiceServiceOutput
 {

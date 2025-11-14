@@ -1,4 +1,4 @@
-﻿namespace BillingService.Application.Services.Inputs;
+﻿namespace BillingService.Application.Services.InvoiceService.Inputs;
 
 public sealed class CreateInvoiceServiceInput
 {

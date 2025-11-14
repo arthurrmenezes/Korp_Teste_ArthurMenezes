@@ -63,4 +63,24 @@ public class InvoiceRepository : IInvoiceRepository
             .AsTracking()
             .FirstOrDefaultAsync(cancellationToken);
     }
+
+    public async Task<Invoice[]> GetAllInvoicesAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        var invoicesToSkip = (pageNumber - 1) * pageSize;
+
+        var invoices = await _dataContext.Invoices
+            .Include(i => i.Items)
+            .OrderBy(i => i.Id)
+            .Skip(invoicesToSkip)
+            .Take(pageSize)
+            .ToArrayAsync(cancellationToken);
+
+        return invoices;
+    }
+
+    public async Task<int> GetTotalInvoicesCountAsync(CancellationToken cancellationToken)
+    {
+        var count = await _dataContext.Invoices.CountAsync(cancellationToken);
+        return count;
+    }
 }

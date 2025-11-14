@@ -1,9 +1,9 @@
-﻿using BillingService.Application.Services.Inputs;
-using BillingService.Application.Services.Interfaces;
-using BillingService.WebApi.Controllers.Payloads;
+﻿using BillingService.Application.Services.InvoiceService.Inputs;
+using BillingService.Application.Services.InvoiceService.Interfaces;
+using BillingService.WebApi.Controllers.InvoiceController.Payloads;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BillingService.WebApi.Controllers;
+namespace BillingService.WebApi.Controllers.InvoiceController;
 
 [ApiController]
 [Route("api/v1/invoices")]
@@ -60,7 +60,7 @@ public class InvoiceController : ControllerBase
 
     [HttpPost]
     [Route("{invoiceId}/add-product")]
-    public async Task<IActionResult> AddItemsToInvoiceById(
+    public async Task<IActionResult> AddItemsToInvoiceByIdAsync(
         [FromRoute] int invoiceId,
         [FromBody] AddItemsToInvoiceByIdPayload input,
         CancellationToken cancellationToken)
@@ -99,6 +99,26 @@ public class InvoiceController : ControllerBase
             return BadRequest($"Invalid invoice ID. Remember: the invoice ID must be greater than zero and less than {int.MaxValue}.");
 
         var response = await _invoiceService.PrintInvoiceByIdServiceAsync(invoiceId, cancellationToken);
+
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllInvoicesAsync(
+        CancellationToken cancellationToken,
+        int pageNumber = 1,
+        int pageSize = 5)
+    {
+        if (pageNumber <= 0)
+            pageNumber = 1;
+
+        if (pageSize <= 0)
+            pageSize = 5;
+
+        var response = await _invoiceService.GetAllInvoicesServiceAsync(
+            pageNumber: pageNumber,
+            pageSize: pageSize,
+            cancellationToken: cancellationToken);
 
         return Ok(response);
     }

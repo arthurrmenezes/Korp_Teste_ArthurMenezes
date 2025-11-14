@@ -11,4 +11,6 @@ public interface IInvoiceRepository
     public Task UpdateInvoiceAsync(Invoice invoice, CancellationToken cancellationToken);
     public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken);
     public Task<Invoice?> GetInvoiceToUpdateByIdAsync(int id, CancellationToken cancellationToken);
+    public Task<Invoice[]> GetAllInvoicesAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
+    public Task<int> GetTotalInvoicesCountAsync(CancellationToken cancellationToken);
 }

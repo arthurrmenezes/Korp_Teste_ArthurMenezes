@@ -1,7 +1,7 @@
-﻿using BillingService.Application.Services.Inputs;
-using BillingService.Application.Services.Outputs;
+﻿using BillingService.Application.Services.InvoiceService.Inputs;
+using BillingService.Application.Services.InvoiceService.Outputs;
 
-namespace BillingService.Application.Services.Interfaces;
+namespace BillingService.Application.Services.InvoiceService.Interfaces;
 
 public interface IInvoiceService
 {
@@ -20,5 +20,10 @@ public interface IInvoiceService
 
     public Task<PrintInvoiceByIdServiceOutput> PrintInvoiceByIdServiceAsync(
         int invoiceId,
+        CancellationToken cancellationToken);
+
+    public Task<GetAllInvoicesServiceOutput> GetAllInvoicesServiceAsync(
+        int pageNumber,
+        int pageSize,
         CancellationToken cancellationToken);
 }
