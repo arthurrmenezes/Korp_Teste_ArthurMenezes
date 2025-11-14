@@ -1,4 +1,4 @@
-﻿namespace BillingService.WebApi.Controllers.Payloads;
+﻿namespace BillingService.WebApi.Controllers.InvoiceController.Payloads;
 
 public sealed class AddItemsToInvoiceByIdPayload
 {
