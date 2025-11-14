@@ -8,5 +8,52 @@
 *.user
 *.suo
 
-# Ignore IDE files (VS Code)
+# Compiled output
+dist/
+build/
+out-tsc/
+
+# Dependencies
+node_modules/
+
+# IDEs and editors
 .vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Angular build cache
+.angular/
+.angular/cache/
+
+# Environment files (se usar variáveis de ambiente locais)
+src/environments/environment.local.ts
+src/environments/environment.local.prod.ts
+
+# Logs
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Compiled Typescript
+*.js.map
+*.js
+*.d.ts
+
+# Misc
+package-lock.json
+yarn.lock
+.pnpm-lock.yaml
