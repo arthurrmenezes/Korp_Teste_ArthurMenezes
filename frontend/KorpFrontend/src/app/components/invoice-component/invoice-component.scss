@@ -1,0 +1,158 @@
+.invoice-page-container {
+  max-width: 1080px; 
+  margin: 20px auto; 
+  font-size: 16px;
+}
+
+.invoice-page-container mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 24px;
+}
+
+.invoice-page-container mat-card-content {
+  padding-top: 8px;
+}
+
+.header-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.load-by-id {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.load-by-id mat-form-field {
+  width: 250px;
+}
+
+.load-by-id mat-form-field .mat-mdc-form-field-flex {
+  height: 50px;
+}
+
+.invoice-open-actions {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 24px;
+}
+
+.action-item {
+  min-width: 0;
+  max-width: 400px;
+}
+
+.action-item h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.action-item p {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #666;
+}
+
+.sort-controls {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.sort-controls .sort-select {
+  width: 150px; 
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+th.mat-header-cell, td.mat-cell {
+  width: 20%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.loading-shade {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  min-height: 200px;
+}
+
+.invoice-details-info {
+  padding: 0 8px; 
+}
+
+.info-line {
+  margin: 0 0 8px 0; 
+  font-size: 16px;
+}
+
+.info-label {
+  color: #666;
+  font-weight: 500;
+  margin-right: 1px; 
+}
+
+.info-value {
+  font-weight: 500;
+}
+
+.invoice-items-table {
+  table-layout: auto; 
+}
+
+.invoice-items-table th.mat-header-cell {
+  width: auto; 
+  white-space: normal;
+  font-size: 14px; 
+  color: #666;
+}
+
+.invoice-items-table td.mat-cell {
+  width: auto; 
+  white-space: normal;
+  font-size: 16px; 
+}
+
+.invoice-items-table th.mat-header-cell:nth-child(1), 
+.invoice-items-table td.mat-cell:nth-child(1) { 
+  width: 30%; 
+}
+
+.invoice-items-table th.mat-header-cell:nth-child(2), 
+.invoice-items-table td.mat-cell:nth-child(2) { 
+  width: 50%; 
+}
+
+.invoice-items-table th.mat-header-cell:nth-child(3), 
+.invoice-items-table td.mat-cell:nth-child(3) { 
+  width: 20%; 
+}
+
+.detail-error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f44336;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 8px 16px;
+  background: #fef0f0;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}

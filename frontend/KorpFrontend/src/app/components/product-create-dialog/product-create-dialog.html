@@ -1,0 +1,39 @@
+<div style="position: relative;">
+  <h1 mat-dialog-title>Cadastrar Novo Produto</h1>
+
+  @if (isRegistering) {
+    <div class="loading-overlay">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+  }
+
+  <div mat-dialog-content>
+    <mat-form-field style="width: 100%;">
+      <mat-label>Código</mat-label>
+      <input matInput [(ngModel)]="newProduct.code" name="newCode">
+    </mat-form-field>
+
+    <mat-form-field style="width: 100%;">
+      <mat-label>Descrição (Nome do Produto)</mat-label>
+      <input matInput [(ngModel)]="newProduct.description" name="newDescription">
+    </mat-form-field>
+
+    <mat-form-field style="width: 100%;">
+      <mat-label>Saldo (Estoque Inicial)</mat-label>
+      <input matInput type="number" [(ngModel)]="newProduct.balance" name="newBalance">
+    </mat-form-field>
+
+    @if (registerErrorMessage) {
+      <div style="margin-top: 15px; color: red;">
+        {{ registerErrorMessage }}
+      </div>
+    }
+  </div>
+
+  <div mat-dialog-actions align="end">
+    <button mat-stroked-button (click)="onCancel()" [disabled]="isRegistering">Cancelar</button>
+    <button mat-flat-button color="primary" (click)="onSaveProduct()" [disabled]="isRegistering">
+      {{ isRegistering ? 'Salvando...' : 'Registrar Novo Produto' }}
+    </button>
+  </div>
+</div>

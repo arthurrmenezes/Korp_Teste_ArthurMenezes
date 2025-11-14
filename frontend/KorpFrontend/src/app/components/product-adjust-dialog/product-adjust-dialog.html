@@ -1,0 +1,62 @@
+<div style="position: relative;">
+  <h1 mat-dialog-title>{{ product.description }}</h1>
+
+  <div mat-dialog-content>
+    <p class="product-info">
+      <strong>Código:</strong> {{ product.code }}<br>
+      <strong>Quantidade:</strong> {{ product.balance }} unidades
+    </p>
+
+    <mat-divider style="margin: 10px 0;"></mat-divider>
+
+    <mat-form-field style="width: 100%;">
+      <mat-label>Quantidade para Ajustar</mat-label>
+      <input
+        matInput
+        type="number"
+        [(ngModel)]="adjustQuantity"
+        name="adjustQuantity"
+      />
+    </mat-form-field>
+
+    @if (errorMessage) {
+      <div style="margin-top: 15px; color: red;">
+        {{ errorMessage }}
+      </div>
+    }
+
+    <div class="dialog-actions-container">
+      <div class="adjust-buttons">
+        <button
+          mat-flat-button
+          color="warn"
+          (click)="onAdjustBalance('deduct')"
+          [disabled]="isAdjusting"
+        >
+          <mat-icon>remove</mat-icon>
+          Decrementar
+        </button>
+
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="onAdjustBalance('increment')"
+          [disabled]="isAdjusting"
+        >
+          <mat-icon>add</mat-icon>
+          Incrementar
+        </button>
+      </div>
+
+      <div class="close-button-row">
+        <button
+          mat-stroked-button
+          (click)="onCancel()"
+          [disabled]="isAdjusting"
+        >
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

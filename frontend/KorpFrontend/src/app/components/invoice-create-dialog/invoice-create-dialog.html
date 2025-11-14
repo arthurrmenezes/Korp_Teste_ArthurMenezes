@@ -1,0 +1,76 @@
+<div style="position: relative;">
+  <h1 mat-dialog-title>Criação de Nota Fiscal</h1>
+
+  @if (isSaving) {
+    <div class="loading-overlay">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+  }
+
+  <div mat-dialog-content>
+
+    <h4>1. Adicione os produtos</h4>
+    <div style="display: flex; gap: 10px; align-items: flex-start;">
+      
+      <mat-form-field style="width: 200px;">
+        <mat-label>Produto</mat-label>
+        <mat-select [(ngModel)]="selectedProduct"> 
+          @if (isLoadingProducts) {
+            <mat-option disabled>
+              <mat-spinner diameter="20"></mat-spinner> Carregando...
+            </mat-option>
+          }
+          @for (product of allProducts; track product.id) {
+            <mat-option [value]="product">
+              {{ product.description }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field style="width: 150px;">
+        <mat-label>Quantidade</mat-label>
+        <input matInput type="number" [(ngModel)]="newProductQuantity" (keyup.enter)="addItem()">
+      </mat-form-field>
+      <button mat-flat-button color="accent" (click)="addItem()" [disabled]="isLoadingProducts">
+        Adicionar
+      </button>
+    </div>
+
+    <h4>2. Produtos adicionados:</h4>
+    @if (items.length > 0) {
+    <mat-list>
+      @for (item of items; track $index) {
+      <mat-list-item>
+        
+        <span class="item-text">
+          Nome: {{ item.description }} | Código: {{ item.productCode }} | Quantidade: {{ item.quantity }}
+        </span>
+
+        <span class="flex-spacer"></span>
+
+        <button mat-icon-button color="warn" (click)="removeItem($index)" title="Remover item">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-list-item>
+      }
+    </mat-list>
+    } @else {
+    <p style="padding: 10px; color: gray;">Nenhum item adicionado.</p>
+    }
+
+    @if (errorMessage) {
+    <div style="color: red; margin-top: 15px;">
+      {{ errorMessage }}
+    </div>
+    }
+
+  </div>
+
+  <div mat-dialog-actions align="end">
+    <button mat-stroked-button (click)="onCancel()" [disabled]="isSaving">Cancelar</button>
+    <button mat-flat-button color="primary" (click)="onSave()" [disabled]="isSaving || items.length === 0">
+      {{ isSaving ? 'Salvando...' : 'Criar' }}
+    </button>
+  </div>
+</div>

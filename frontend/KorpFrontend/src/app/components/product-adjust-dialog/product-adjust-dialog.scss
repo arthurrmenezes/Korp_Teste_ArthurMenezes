@@ -1,0 +1,33 @@
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.product-info {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.dialog-actions-container {
+  margin-top: 24px;
+}
+
+.adjust-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.close-button-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}

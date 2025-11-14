@@ -1,0 +1,17 @@
+{
+    "/api/v1/invoices": {
+        "target": "https://localhost:7154",
+        "secure": false,
+        "changeOrigin": true
+    },
+    "/api/v1/products": {
+        "target": "https://localhost:7146",
+        "secure": false,
+        "changeOrigin": true
+    },
+    "/api/v1/ai": {
+    "target": "https://localhost:7154", 
+    "secure": false,
+    "changeOrigin": true
+  }
+}

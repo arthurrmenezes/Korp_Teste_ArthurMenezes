@@ -1,0 +1,79 @@
+<div class="app-layout-wrapper">
+
+  <mat-toolbar color="primary">
+    <button mat-icon-button (click)="toggleSidenav()" title="Menu">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span class="toolbar-title">{{ title }}</span>
+  </mat-toolbar>
+
+  <mat-sidenav-container class="app-container">
+    <mat-sidenav mode="side" opened="true" class="app-sidenav">
+      <mat-nav-list>
+        <mat-list-item (click)="setActivePage('products')" [class.active]="activePage === 'products'">
+          <mat-icon matListItemIcon>inventory_2</mat-icon>
+          <span class="nav-text">Produtos</span>
+        </mat-list-item>
+        <mat-list-item (click)="setActivePage('invoices')" [class.active]="activePage === 'invoices'">
+          <mat-icon matListItemIcon>receipt_long</mat-icon>
+          <span class="nav-text">Notas Fiscais</span>
+        </mat-list-item>
+      </mat-nav-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="app-content">
+      @if (activePage === 'products') {
+        <app-stock-component></app-stock-component>
+      }
+      @if (activePage === 'invoices') {
+        <app-invoice-component></app-invoice-component>
+      }
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+
+  <footer class="app-footer">
+      <p>© 2025 Sistema de gestão de notas fiscais. Todos os direitos reservados.</p>
+      <p>Desenvolvido por <a href="https://www.linkedin.com/in/arthuralbuquerquemenezes/">Arthur Menezes</a></p>
+  </footer>
+
+  @if (isChatOpen) {
+  <div class="chat-window">
+    
+    <div class="chat-header">
+      <span>Assistente Korp</span>
+      <button mat-icon-button (click)="toggleChat()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="chat-messages-container">
+      @for (message of chatMessages; track $index) {
+        <div class="chat-message" [class.user-message]="message.role === 'user'" [class.bot-message]="message.role === 'bot'">
+          {{ message.text }}
+        </div>
+      }
+      @if (isChatLoading) {
+        <div class="chat-message bot-message">
+          <mat-spinner diameter="20"></mat-spinner>
+        </div>
+      }
+    </div>
+
+    <div class="chat-input-container">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Digite sua pergunta...</mat-label>
+        <input matInput [(ngModel)]="currentUserQuestion" (keyup.enter)="sendChatMessage()">
+      </mat-form-field>
+      <button mat-icon-button color="primary" (click)="sendChatMessage()" [disabled]="isChatLoading || !currentUserQuestion">
+        <mat-icon>send</mat-icon>
+      </button>
+    </div>
+
+  </div>
+}
+
+<button mat-fab color="primary" class="chat-fab-button" (click)="toggleChat()" title="Abrir chat">
+  <mat-icon>support_agent</mat-icon>
+</button>
+
+</div>
