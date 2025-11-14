@@ -137,7 +137,7 @@ public sealed class ProductService : IProductService
             pageNumber: pageNumber,
             pageSize: pageSize,
             totalPages: (int)Math.Ceiling((double) totalProductsCount / pageSize),
-            product: productListOutput);
+            products: productListOutput);
 
         return output;
     }

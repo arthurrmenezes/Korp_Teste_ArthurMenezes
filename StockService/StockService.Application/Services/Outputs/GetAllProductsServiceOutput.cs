@@ -6,19 +6,19 @@ public sealed class GetAllProductsServiceOutput
     public int PageNumber { get; }
     public int PageSize { get; }
     public int TotalPages { get; }
-    public GetAllProductsServiceOutputProduct[] Product { get; }
+    public GetAllProductsServiceOutputProduct[] Products { get; }
 
-    private GetAllProductsServiceOutput(int totalProducts, int pageNumber, int pageSize, int totalPages, GetAllProductsServiceOutputProduct[] product)
+    private GetAllProductsServiceOutput(int totalProducts, int pageNumber, int pageSize, int totalPages, GetAllProductsServiceOutputProduct[] products)
     {
         TotalProducts = totalProducts;
         PageNumber = pageNumber;
         PageSize = pageSize;
         TotalPages = totalPages;
-        Product = product;
+        Products = products;
     }
 
-    public static GetAllProductsServiceOutput Factory(int totalProducts, int pageNumber, int pageSize, int totalPages, GetAllProductsServiceOutputProduct[] product)
-        => new GetAllProductsServiceOutput(totalProducts, pageNumber, pageSize, totalPages, product);
+    public static GetAllProductsServiceOutput Factory(int totalProducts, int pageNumber, int pageSize, int totalPages, GetAllProductsServiceOutputProduct[] products)
+        => new GetAllProductsServiceOutput(totalProducts, pageNumber, pageSize, totalPages, products);
 }
 
 public sealed class GetAllProductsServiceOutputProduct

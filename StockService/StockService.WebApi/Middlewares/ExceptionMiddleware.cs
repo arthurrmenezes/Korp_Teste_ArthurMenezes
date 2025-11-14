@@ -21,20 +21,22 @@ public class ExceptionMiddleware
         }
         catch (Exception exception)
         {
-            var statusCode = GetExceptionStatusCode(exception);
+            var statusCode = GetExceptionStatusCode(exception).statusCode;
 
             _logger.LogError(exception, exception.Message);
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;
 
+            var error = GetExceptionStatusCode(exception).error;
+
             if (_environment.IsDevelopment())
             {
                 var response = new
                 {
                     StatusCode = statusCode,
+                    Error = error,
                     Message = exception.Message,
-                    OccurredAt = DateTime.UtcNow,
                     StackTrace = exception.StackTrace
                 };
 
@@ -45,8 +47,8 @@ public class ExceptionMiddleware
                 var response = new
                 {
                     StatusCode = statusCode,
-                    Message = exception.Message,
-                    OccurredAt = DateTime.UtcNow
+                    Error = error,
+                    Message = exception.Message
                 };
 
                 await context.Response.WriteAsJsonAsync(response);
@@ -54,15 +56,16 @@ public class ExceptionMiddleware
         }
     }
 
-    private int GetExceptionStatusCode(Exception exception)
+    private (int statusCode, string error) GetExceptionStatusCode(Exception exception)
     {
-        var statusCode = exception switch
+        var (statusCode, error) = exception switch
         {
-            ArgumentException => StatusCodes.Status400BadRequest,
-            InvalidOperationException => StatusCodes.Status400BadRequest,
-            KeyNotFoundException => StatusCodes.Status404NotFound,
-            _ => StatusCodes.Status500InternalServerError
+            ArgumentException => (StatusCodes.Status400BadRequest, "Bad Request"),
+            InvalidOperationException => (StatusCodes.Status400BadRequest, "Bad Request"),
+            KeyNotFoundException => (StatusCodes.Status404NotFound, "Not Found"),
+            _ => (StatusCodes.Status500InternalServerError, "Internal Server Error")
         };
-        return statusCode;
+
+        return (statusCode, error);
     }
 }

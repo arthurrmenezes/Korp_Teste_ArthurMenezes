@@ -126,7 +126,11 @@ public class ProductController : ControllerBase
         if (pageSize <= 0)
             pageSize = 5;
 
-        var response = await _productService.GetAllProductsServiceAsync(pageNumber, pageSize, cancellationToken);
+        var response = await _productService.GetAllProductsServiceAsync(
+            pageNumber: pageNumber, 
+            pageSize: pageSize, 
+            cancellationToken: cancellationToken);
+
         return Ok(response);
     }
 }
